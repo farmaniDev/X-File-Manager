@@ -1,12 +1,15 @@
 package com.farmani.xfilemanager;
 
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
@@ -42,11 +45,13 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
     public class FileViewHolder extends RecyclerView.ViewHolder {
         private TextView fileName;
         private ImageView fileIcon;
+        private View moreIV;
 
         public FileViewHolder(@NonNull View itemView) {
             super(itemView);
             fileName = itemView.findViewById(R.id.tv_file_name);
             fileIcon = itemView.findViewById(R.id.iv_file);
+            moreIV = itemView.findViewById(R.id.iv_more);
         }
 
         public void bind(File file) {
@@ -59,6 +64,32 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
             fileName.setText(file.getName());
             itemView.setOnClickListener(v -> {
                 fileItemEventListener.onItemClick(file);
+            });
+
+            moreIV.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PopupMenu popupMenu = new PopupMenu(v.getContext(), v);
+                    popupMenu.getMenuInflater().inflate(R.menu.menu_file_item, popupMenu.getMenu());
+                    popupMenu.show();
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.menuItem_copy:
+                                    Toast.makeText(v.getContext(), "Copy", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case R.id.menuItem_move:
+                                    Toast.makeText(v.getContext(), "Move", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case R.id.menuItem_delete:
+                                    Toast.makeText(v.getContext(), "Delete", Toast.LENGTH_SHORT).show();
+                                    break;
+                            }
+                            return false;
+                        }
+                    });
+                }
             });
         }
     }
