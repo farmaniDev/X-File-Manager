@@ -23,9 +23,11 @@
                 android:fontFamily="@font/primary_bold"
                 android:text="@string/app_name"
                 android:textColor="@color/white"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <ImageView
+                android:id="@+id/iv_main_addNewFolder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|end"
@@ -68,6 +70,7 @@
                 style="@style/Widget.App.Button.OutlinedButton.IconOnly"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:cornerRadius="8dp"
                 app:icon="@drawable/baseline_format_list_bulleted_24" />
 
             <com.google.android.material.button.MaterialButton
@@ -75,6 +78,7 @@
                 style="@style/Widget.App.Button.OutlinedButton.IconOnly"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:cornerRadius="8dp"
                 app:icon="@drawable/baseline_grid_view_24" />
 
         </com.google.android.material.button.MaterialButtonToggleGroup>
