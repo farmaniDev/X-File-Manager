@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">X File Manager</string>
     <string name="search">Search ...</string>
+    <string name="add_new_folder">Add New Folder</string>
+    <string name="enter_folder_name">Enter folder name</string>
+    <string name="create">Create</string>
 </resources>
