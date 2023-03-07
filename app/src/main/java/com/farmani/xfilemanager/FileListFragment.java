@@ -44,9 +44,16 @@ public class FileListFragment extends Fragment implements FileAdapter.FileItemEv
     }
 
     @Override
-    public void onItemClick(File file) {
+    public void onFileItemClick(File file) {
         if (file.isDirectory()) {
             ((MainActivity)getActivity()).ListFiles(file.getPath());
+        }
+    }
+
+    @Override
+    public void onDeleteFileItemClick(File file) {
+        if (file.delete()) {
+            fileAdapter.deleteFile(file);
         }
     }
 

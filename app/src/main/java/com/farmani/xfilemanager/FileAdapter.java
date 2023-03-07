@@ -63,7 +63,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
 
             fileName.setText(file.getName());
             itemView.setOnClickListener(v -> {
-                fileItemEventListener.onItemClick(file);
+                fileItemEventListener.onFileItemClick(file);
             });
 
             moreIV.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +83,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
                                     Toast.makeText(v.getContext(), "Move", Toast.LENGTH_SHORT).show();
                                     break;
                                 case R.id.menuItem_delete:
-                                    Toast.makeText(v.getContext(), "Delete", Toast.LENGTH_SHORT).show();
+                                    fileItemEventListener.onDeleteFileItemClick(file);
                                     break;
                             }
                             return false;
@@ -94,8 +94,18 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
         }
     }
 
+    public void deleteFile(File file) {
+        int index = files.indexOf(file);
+        if (index > -1) {
+            files.remove(index);
+            notifyItemRemoved(index);
+        }
+    }
+
     public interface FileItemEventListener {
-        void onItemClick(File file);
+        void onFileItemClick(File file);
+
+        void onDeleteFileItemClick(File file);
     }
 
     public void addFile(File file) {
