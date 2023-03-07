@@ -1,7 +1,10 @@
 package com.farmani.xfilemanager;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -16,12 +19,36 @@ public class MainActivity extends AppCompatActivity implements AddNewFolderDialo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        File externalFilesDir = getExternalFilesDir(null);
-        ListFiles(externalFilesDir.getPath(), false);
+        if (StorageHelper.isExternalStorageReadable()) {
+            File externalFilesDir = getExternalFilesDir(null);
+            ListFiles(externalFilesDir.getPath(), false);
+        }
+
         findViewById(R.id.iv_main_addNewFolder).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new AddNewFolderDialog().show(getSupportFragmentManager(), null);
+            }
+        });
+
+        EditText editText = findViewById(R.id.et_main_search);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.frame_main_fragmentContainer);
+                if (fragment instanceof FileListFragment) {
+                    ((FileListFragment) fragment).search(s.toString());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
 
@@ -49,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements AddNewFolderDialo
     public void onCreateFolderButtonClick(String folderName) {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.frame_main_fragmentContainer);
         if (fragment instanceof FileListFragment) {
-            ((FileListFragment) fragment).createFolderName(folderName);
+            ((FileListFragment) fragment).createNewFolder(folderName);
         }
     }
 }

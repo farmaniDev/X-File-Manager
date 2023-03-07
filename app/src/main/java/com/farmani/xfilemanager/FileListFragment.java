@@ -37,9 +37,11 @@ public class FileListFragment extends Fragment implements FileAdapter.FileItemEv
         recyclerView = view.findViewById(R.id.rv_files);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         File currentFolder = new File(path);
-        File[] files = currentFolder.listFiles();
-        fileAdapter = new FileAdapter(Arrays.asList(files), this);
-        recyclerView.setAdapter(fileAdapter);
+        if (StorageHelper.isExternalStorageReadable()) {
+            File[] files = currentFolder.listFiles();
+            fileAdapter = new FileAdapter(Arrays.asList(files), this);
+            recyclerView.setAdapter(fileAdapter);
+        }
         TextView pathTV = view.findViewById(R.id.tv_files_path);
         pathTV.setText(currentFolder.getName().equalsIgnoreCase("files") ? "External storage" : currentFolder.getName());
         view.findViewById(R.id.iv_files_back).setOnClickListener(v -> getActivity().onBackPressed());
@@ -55,29 +57,35 @@ public class FileListFragment extends Fragment implements FileAdapter.FileItemEv
 
     @Override
     public void onDeleteFileItemClick(File file) {
-        if (file.delete()) {
-            fileAdapter.deleteFile(file);
+        if (StorageHelper.isExternalStorageWritable()) {
+            if (file.delete()) {
+                fileAdapter.deleteFile(file);
+            }
         }
     }
 
     @Override
     public void onCopyFileItemClick(File file) {
-        try {
-            copy(file, getDestinationFile(file.getName()));
-            Toast.makeText(getContext(), "File copied", Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (StorageHelper.isExternalStorageWritable()) {
+            try {
+                copy(file, getDestinationFile(file.getName()));
+                Toast.makeText(getContext(), "File copied", Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
     @Override
     public void onMoveFileItemClick(File file) {
-        try {
-            copy(file, getDestinationFile(file.getName()));
-            onDeleteFileItemClick(file);
-            Toast.makeText(getContext(), "File moved", Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (StorageHelper.isExternalStorageWritable()) {
+            try {
+                copy(file, getDestinationFile(file.getName()));
+                onDeleteFileItemClick(file);
+                Toast.makeText(getContext(), "File moved", Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -86,15 +94,17 @@ public class FileListFragment extends Fragment implements FileAdapter.FileItemEv
         return new File(getContext().getExternalFilesDir(null).getPath() + File.separator + "Destination" + File.separator + fileName);
     }
 
-    public void createFolderName(String folderName) {
-        File newFolder = new File(path + File.separator + folderName);
-        if (!newFolder.exists()) {
-            if (newFolder.mkdir()) {
-                fileAdapter.addFile(newFolder);
-                recyclerView.smoothScrollToPosition(0);
+    public void createNewFolder(String folderName) {
+        if (StorageHelper.isExternalStorageWritable()) {
+            File newFolder = new File(path + File.separator + folderName);
+            if (!newFolder.exists()) {
+                if (newFolder.mkdir()) {
+                    fileAdapter.addFile(newFolder);
+                    recyclerView.smoothScrollToPosition(0);
+                }
+            } else {
+                Toast.makeText(getContext(), "File name exists!", Toast.LENGTH_SHORT).show();
             }
-        } else {
-            Toast.makeText(getContext(), "File name exists!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -108,5 +118,11 @@ public class FileListFragment extends Fragment implements FileAdapter.FileItemEv
         }
         fileInputStream.close();
         fileOutputStream.close();
+    }
+
+    public void search(String query) {
+        if (fileAdapter != null) {
+            fileAdapter.search(query);
+        }
     }
 }
