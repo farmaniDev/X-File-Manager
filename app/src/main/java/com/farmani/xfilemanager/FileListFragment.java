@@ -14,6 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 
 public class FileListFragment extends Fragment implements FileAdapter.FileItemEventListener {
@@ -46,7 +49,7 @@ public class FileListFragment extends Fragment implements FileAdapter.FileItemEv
     @Override
     public void onFileItemClick(File file) {
         if (file.isDirectory()) {
-            ((MainActivity)getActivity()).ListFiles(file.getPath());
+            ((MainActivity) getActivity()).ListFiles(file.getPath());
         }
     }
 
@@ -55,6 +58,32 @@ public class FileListFragment extends Fragment implements FileAdapter.FileItemEv
         if (file.delete()) {
             fileAdapter.deleteFile(file);
         }
+    }
+
+    @Override
+    public void onCopyFileItemClick(File file) {
+        try {
+            copy(file, getDestinationFile(file.getName()));
+            Toast.makeText(getContext(), "File copied", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void onMoveFileItemClick(File file) {
+        try {
+            copy(file, getDestinationFile(file.getName()));
+            onDeleteFileItemClick(file);
+            Toast.makeText(getContext(), "File moved", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // All files copy or move to this path nad user has no choice to choose destination
+    private File getDestinationFile(String fileName) {
+        return new File(getContext().getExternalFilesDir(null).getPath() + File.separator + "Destination" + File.separator + fileName);
     }
 
     public void createFolderName(String folderName) {
@@ -67,5 +96,17 @@ public class FileListFragment extends Fragment implements FileAdapter.FileItemEv
         } else {
             Toast.makeText(getContext(), "File name exists!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void copy(File source, File destination) throws IOException {
+        FileInputStream fileInputStream = new FileInputStream(source);
+        FileOutputStream fileOutputStream = new FileOutputStream(destination);
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = fileInputStream.read()) > 0) {
+            fileOutputStream.write(buffer, 0, length);
+        }
+        fileInputStream.close();
+        fileOutputStream.close();
     }
 }

@@ -77,10 +77,10 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
                         public boolean onMenuItemClick(MenuItem item) {
                             switch (item.getItemId()) {
                                 case R.id.menuItem_copy:
-                                    Toast.makeText(v.getContext(), "Copy", Toast.LENGTH_SHORT).show();
+                                    fileItemEventListener.onCopyFileItemClick(file);
                                     break;
                                 case R.id.menuItem_move:
-                                    Toast.makeText(v.getContext(), "Move", Toast.LENGTH_SHORT).show();
+                                    fileItemEventListener.onMoveFileItemClick(file);
                                     break;
                                 case R.id.menuItem_delete:
                                     fileItemEventListener.onDeleteFileItemClick(file);
@@ -104,8 +104,9 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
 
     public interface FileItemEventListener {
         void onFileItemClick(File file);
-
         void onDeleteFileItemClick(File file);
+        void onCopyFileItemClick(File file);
+        void onMoveFileItemClick(File file);
     }
 
     public void addFile(File file) {
