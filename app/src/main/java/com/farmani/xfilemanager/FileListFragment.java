@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,6 +24,7 @@ public class FileListFragment extends Fragment implements FileAdapter.FileItemEv
     private String path;
     private FileAdapter fileAdapter;
     private RecyclerView recyclerView;
+    private GridLayoutManager gridLayoutManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,7 +37,8 @@ public class FileListFragment extends Fragment implements FileAdapter.FileItemEv
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_files, container, false);
         recyclerView = view.findViewById(R.id.rv_files);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        gridLayoutManager = new GridLayoutManager(getContext(), 1, RecyclerView.VERTICAL, false);
+        recyclerView.setLayoutManager(gridLayoutManager);
         File currentFolder = new File(path);
         if (StorageHelper.isExternalStorageReadable()) {
             File[] files = currentFolder.listFiles();
@@ -123,6 +126,17 @@ public class FileListFragment extends Fragment implements FileAdapter.FileItemEv
     public void search(String query) {
         if (fileAdapter != null) {
             fileAdapter.search(query);
+        }
+    }
+
+    public void setViewType(ViewType viewType) {
+        if (fileAdapter != null) {
+            fileAdapter.setViewType(viewType);
+            if (viewType == ViewType.GRID) {
+                gridLayoutManager.setSpanCount(2);
+            } else {
+                gridLayoutManager.setSpanCount(1);
+            }
         }
     }
 }

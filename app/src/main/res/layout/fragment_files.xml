@@ -32,9 +32,10 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_files"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_below="@id/frame_files_pathContainer"
+        android:layout_centerHorizontal="true"
         android:clipToPadding="false"
         android:paddingTop="4dp"
         android:paddingBottom="4dp" />

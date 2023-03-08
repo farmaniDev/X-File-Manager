@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
@@ -20,6 +19,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
     private List<File> files;
     private List<File> filteredFiles;
     private FileItemEventListener fileItemEventListener;
+    private ViewType viewType = ViewType.ROW;
 
     public FileAdapter(List<File> files, FileItemEventListener fileItemEventListener) {
         this.files = new ArrayList<>(files);
@@ -31,7 +31,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
     @Override
     public FileViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new FileViewHolder(LayoutInflater.from(parent.getContext()).inflate(
-                R.layout.item_file, parent, false));
+                viewType == ViewType.ROW.getValue() ? R.layout.item_file : R.layout.item_file_grid, parent, false));
     }
 
     @Override
@@ -106,8 +106,11 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
 
     public interface FileItemEventListener {
         void onFileItemClick(File file);
+
         void onDeleteFileItemClick(File file);
+
         void onCopyFileItemClick(File file);
+
         void onMoveFileItemClick(File file);
     }
 
@@ -131,5 +134,15 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
             this.filteredFiles = this.files;
             notifyDataSetChanged();
         }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return viewType.getValue();
+    }
+
+    public void setViewType(ViewType viewType) {
+        this.viewType = viewType;
+        notifyDataSetChanged();
     }
 }
